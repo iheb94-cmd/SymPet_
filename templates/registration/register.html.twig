@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription — SymPet{% endblock %}
+
+{% block body %}
+    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background:#f0f4f0;">
+        <div class="card shadow-sm border-0" style="width:100%;max-width:480px;border-radius:16px;overflow:hidden;">
+
+            <div class="text-center text-white py-4 px-4" style="background:#2d6a4f;">
+                <div style="font-size:40px;">🐾</div>
+                <div style="font-size:24px;font-weight:700;letter-spacing:1px;">
+                    Sym<span style="color:#b7e4c7;">Pet</span>
+                </div>
+                <p class="mb-0 mt-1" style="font-size:13px;opacity:.85;">Créer votre compte gratuitement</p>
+            </div>
+
+            <div class="card-body px-4 py-4">
+
+                {% for flash_error in app.flashes('verify_email_error') %}
+                    <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        {{ flash_error }}
+                    </div>
+                {% endfor %}
+
+                {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
+
+                <div class="row g-3 mb-2">
+                    <div class="col-6">
+                        <label class="form-label fw-semibold" style="font-size:14px;">
+                            <i class="bi bi-person me-1" style="color:#40916c;"></i>Nom
+                        </label>
+                        {{ form_widget(registrationForm.nom, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Votre nom',
+                                'style': 'border-color:#c8dfc8;border-radius:8px;'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.nom) }}
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold" style="font-size:14px;">
+                            <i class="bi bi-person me-1" style="color:#40916c;"></i>Prénom
+                        </label>
+                        {{ form_widget(registrationForm.prenom, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Votre prénom',
+                                'style': 'border-color:#c8dfc8;border-radius:8px;'
+                            }
+                        }) }}
+                        {{ form_errors(registrationForm.prenom) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" style="font-size:14px;">
+                        <i class="bi bi-envelope me-1" style="color:#40916c;"></i>Adresse email
+                    </label>
+                    {{ form_widget(registrationForm.email, {
+                        'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'exemple@email.com',
+                            'style': 'border-color:#c8dfc8;border-radius:8px;'
+                        }
+                    }) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" style="font-size:14px;">
+                        <i class="bi bi-lock me-1" style="color:#40916c;"></i>Mot de passe
+                    </label>
+                    {{ form_widget(registrationForm.plainPassword, {
+                        'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Minimum 6 caractères',
+                            'style': 'border-color:#c8dfc8;border-radius:8px;'
+                        }
+                    }) }}
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check">
+                        {{ form_widget(registrationForm.agreeTerms, {
+                            'attr': {'class': 'form-check-input', 'style': 'border-color:#40916c;'}
+                        }) }}
+                        <label class="form-check-label" style="font-size:13px;color:#4a5568;">
+                            J'accepte les
+                            <a href="#" style="color:#40916c;text-decoration:none;">conditions d'utilisation</a>
+                        </label>
+                        {{ form_errors(registrationForm.agreeTerms) }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn w-100 text-white fw-semibold py-2"
+                        style="background:#2d6a4f;border-radius:50px;font-size:15px;border:none;transition:background .2s;"
+                        onmouseover="this.style.background='#40916c'"
+                        onmouseout="this.style.background='#2d6a4f'">
+                    <i class="bi bi-person-plus me-2"></i>Créer mon compte
+                </button>
+
+                {{ form_end(registrationForm) }}
+
+            </div>
+
+            <div class="text-center py-3 px-4" style="background:#f7faf8;border-top:1px solid #e8f0e8;font-size:14px;color:#4a5568;">
+                Déjà un compte ?
+                <a href="{{ path('app_login') }}" style="color:#40916c;font-weight:600;text-decoration:none;">
+                    Se connecter
+                </a>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

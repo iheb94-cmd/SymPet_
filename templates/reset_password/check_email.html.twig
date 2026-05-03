@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Email envoyé — SymPet{% endblock %}
+
+{% block body %}
+    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background:#f0f4f0;">
+        <div class="card shadow-sm border-0" style="width:100%;max-width:440px;border-radius:16px;overflow:hidden;">
+            <div class="text-center text-white py-4 px-4" style="background:#2d6a4f;">
+                <div style="font-size:40px;">📬</div>
+                <div style="font-size:24px;font-weight:700;letter-spacing:1px;">
+                    Sym<span style="color:#b7e4c7;">Pet</span>
+                </div>
+                <p class="mb-0 mt-1" style="font-size:13px;opacity:.85;">Vérifiez votre boîte mail</p>
+            </div>
+            <div class="card-body px-4 py-4">
+                <div class="text-center mb-4">
+                    <div style="width:70px;height:70px;background:#f0fff4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <i class="bi bi-envelope-check" style="font-size:30px;color:#40916c;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0" style="color:#1b4332;">Email envoyé !</h5>
+                </div>
+
+                <div class="d-flex align-items-start gap-2 mb-3 p-3"
+                     style="background:#f0fff4;border-left:4px solid #40916c;border-radius:8px;font-size:14px;color:#276749;">
+                    <i class="bi bi-info-circle-fill mt-1" style="font-size:16px;flex-shrink:0;"></i>
+                    <span>
+                Si un compte correspond à votre email, un lien de réinitialisation vient d'être envoyé.
+                Ce lien expirera dans
+                <strong>{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.
+            </span>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-4 p-3"
+                     style="background:#fafafa;border-left:4px solid #c8dfc8;border-radius:8px;font-size:14px;color:#4a5568;">
+                    <i class="bi bi-exclamation-circle mt-1" style="font-size:16px;flex-shrink:0;color:#40916c;"></i>
+                    <span>
+                Vous ne recevez pas l'email ? Vérifiez votre dossier <strong>spam</strong> ou
+                <a href="{{ path('app_forgot_password_request') }}"
+                   style="color:#40916c;font-weight:600;text-decoration:none;">réessayez ici</a>.
+            </span>
+                </div>
+                <a href="{{ path('app_login') }}"
+                   class="btn w-100 text-white fw-semibold py-2 text-decoration-none d-block text-center"
+                   style="background:#2d6a4f;border-radius:50px;font-size:15px;border:none;transition:background .2s;"
+                   onmouseover="this.style.background='#40916c'"
+                   onmouseout="this.style.background='#2d6a4f'">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Retour à la connexion
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
