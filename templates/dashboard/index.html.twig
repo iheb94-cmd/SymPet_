@@ -1,0 +1,304 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard SymPet{% endblock %}
+
+{% block body %}
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --bg: #f5f6fa;
+        --card: #ffffff;
+        --border: #e8eaf0;
+        --text: #1a1d2e;
+        --muted: #8b90a7;
+        --accent: #4f6ef7;
+        --accent2: #22c98e;
+        --accent3: #f5a623;
+        --accent4: #e05c6a;
+        --radius: 14px;
+        --shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); }
+
+    .dash-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .dash-title { font-size: 1.5rem; font-weight: 600; margin: 0; }
+    .dash-title span { color: var(--accent); }
+
+    /* Filter bar */
+    .filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 8px 14px;
+        flex-wrap: wrap;
+    }
+    .filter-bar label { font-size: .8rem; color: var(--muted); font-weight: 500; white-space: nowrap; }
+    .filter-bar input[type="date"] {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: .85rem;
+        color: var(--text);
+        background: var(--bg);
+        outline: none;
+    }
+    .filter-bar input[type="date"]:focus { border-color: var(--accent); }
+    .btn-filter {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 6px 16px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: .85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity .15s;
+    }
+    .btn-filter:hover { opacity: .88; }
+    .btn-reset {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 5px 12px;
+        font-size: .82rem;
+        color: var(--muted);
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-reset:hover { border-color: var(--muted); }
+
+    .kpi-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 22px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .kpi-icon {
+        width: 36px; height: 36px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem;
+        margin-bottom: 6px;
+    }
+    .kpi-label { font-size: .78rem; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .kpi-value { font-size: 1.7rem; font-weight: 600; font-family: 'DM Mono', monospace; line-height: 1; }
+    .kpi-sub { font-size: .78rem; color: var(--muted); }
+
+    .chart-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 22px;
+        box-shadow: var(--shadow);
+        height: 100%;
+    }
+    .chart-card h5 { font-size: .95rem; font-weight: 600; margin-bottom: 18px; }
+
+    .sales-list { display: flex; flex-direction: column; gap: 14px; }
+    .sales-item {}
+    .sales-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+    .sales-name { font-size: .85rem; font-weight: 500; }
+    .sales-pct { font-size: .82rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+    .sales-track {
+        height: 8px;
+        background: var(--border);
+        border-radius: 99px;
+        overflow: hidden;
+    }
+    .sales-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+    
+    .no-data {
+        text-align: center;
+        padding: 50px;
+        color: var(--muted);
+        font-size: .9rem;
+    }
+</style>
+
+<div class="container py-4">
+
+    <div class="dash-header">
+        <h2 class="dash-title">Dash<span>board</span> SymPet</h2>
+
+        <form method="GET" action="{{ path('app_dashboard') }}" class="filter-bar">
+            <label>Du</label>
+            <input type="date" name="from" value="{{ from }}">
+            <label>Au</label>
+            <input type="date" name="to" value="{{ to }}">
+            <button type="submit" class="btn-filter">Filtrer</button>
+            <a href="{{ path('app_dashboard') }}" class="btn-reset">Réinitialiser</a>
+        </form>
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background:#eef1fe">👥</div>
+                <div class="kpi-label">Clients</div>
+                <div class="kpi-value">{{ clients }}</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background:#e8faf4">📦</div>
+                <div class="kpi-label">Commandes</div>
+                <div class="kpi-value">{{ orders }}</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background:#fef8ee">💰</div>
+                <div class="kpi-label">Revenue</div>
+                <div class="kpi-value" style="font-size:1.3rem">{{ revenue|number_format(0, ',', ' ') }} TND</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background:#fdeef0">🏆</div>
+                <div class="kpi-label">Top Produit</div>
+                {% if topProduct %}
+                    <div class="kpi-value" style="font-size:1rem; margin-top:4px">{{ topProduct.name }}</div>
+                    <div class="kpi-sub">{{ topProduct.total }} ventes</div>
+                {% else %}
+                    <div class="kpi-value" style="font-size:1rem; color:var(--muted)">—</div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-md-7">
+            <div class="chart-card">
+                <h5>Commandes par période</h5>
+                {% if labels|length > 0 %}
+                    <canvas id="ordersChart" height="220"></canvas>
+                {% else %}
+                    <div class="no-data">
+                        ⚠️ Aucune commande trouvée pour la période sélectionnée
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="chart-card">
+                <h5>Répartition des ventes</h5>
+                <div class="sales-list">
+                    {% set colors = ['#4f6ef7','#22c98e','#f5a623','#e05c6a','#a78bfa','#38bdf8'] %}
+                    {% for item in salesByCategory %}
+                        <div class="sales-item">
+                            <div class="sales-meta">
+                                <span class="sales-name">{{ item.name }}</span>
+                                <span class="sales-pct">{{ item.pct }}%</span>
+                            </div>
+                            <div class="sales-track">
+                                <div class="sales-fill"
+                                     style="width: {{ item.pct }}%; background: {{ colors[loop.index0 % colors|length] }}">
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p style="color:var(--muted); font-size:.85rem; text-align:center;">Aucune donnée disponible.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% if labels|length > 0 %}
+<script>
+(function () {
+
+    const labels = {{ labels|json_encode|raw }};
+    const values = {{ values|json_encode|raw }};
+
+    const canvas = document.getElementById('ordersChart');
+    if (!canvas) return;
+
+    if (window._ordersChart) {
+        window._ordersChart.destroy();
+    }
+
+    window._ordersChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Commandes',
+                data: values,
+
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13,110,253,0.1)',
+
+                tension: 0.4,
+                fill: true,
+
+                pointBackgroundColor: '#0d6efd',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+})();
+</script>
+{% endif %}
+
+{% endblock %}
