@@ -20,9 +20,11 @@ class LigneCommande
     private ?float $prix = null;
 
     #[ORM\ManyToOne(inversedBy: 'ligneCommandes')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Commande $commande = null;
 
     #[ORM\ManyToOne(inversedBy: 'ligneCommandes')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Produit $produit = null;
 
     public function getId(): ?int
