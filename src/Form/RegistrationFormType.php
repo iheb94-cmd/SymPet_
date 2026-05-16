@@ -11,6 +11,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class RegistrationFormType extends AbstractType
 {
@@ -19,42 +21,63 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('nom', null, [
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez entrer votre nom']),
-                ],
-            ])
-            ->add('prenom', null, [
-                'constraints' => [
-                    new NotBlank(['message' => 'Veuillez entrer votre prénom']),
+                    new NotBlank([
+                        'message' => 'Le nom est obligatoire'
+                    ]),
                 ],
             ])
 
-            ->add('email')
+            ->add('prenom', null, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Le prénom est obligatoire'
+                    ]),
+                ],
+            ])
+
+            ->add('email', null, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => "L'email est obligatoire"
+                    ]),
+                    new EmailConstraint([
+                        'message' => "Veuillez entrer un email valide"
+                    ]),
+                ],
+            ])
+
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
-                    new IsTrue(
-                        message: 'You should agree to our terms.',
-                    ),
+                    new IsTrue([
+                        'message' => 'Vous devez accepter les conditions'
+                    ]),
                 ],
             ])
+
             ->add('plainPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
                 'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
-                'constraints' => [
-                    new NotBlank(
-                        message: 'Please enter a password',
-                    ),
-                    new Length(
-                        min: 6,
-                        minMessage: 'Your password should be at least {{ limit }} characters',
-                        // max length allowed by Symfony for security reasons
-                        max: 4096,
-                    ),
+                'attr' => [
+                    'autocomplete' => 'new-password',
+                    'class' => 'form-control'
                 ],
-            ])
-        ;
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez entrer un mot de passe'
+                    ]),
+
+                    new Length([
+                        'min' => 6,
+                        'minMessage' => 'Minimum {{ limit }} caractères',
+                        'max' => 4096,
+                    ]),
+
+                    new Regex([
+                        'pattern' => '/^(?=.*@).{6,}$/',
+                        'message' => 'Le mot de passe doit contenir au moins 6 caractères et un @'
+                    ]),
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
