@@ -22,34 +22,64 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator
+    ) {
     }
 
     public function authenticate(Request $request): Passport
     {
         $email = $request->getPayload()->getString('email');
 
-        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
+        $request->getSession()->set(
+            SecurityRequestAttributes::LAST_USERNAME,
+            $email
+        );
 
         return new Passport(
             new UserBadge($email),
-            new PasswordCredentials($request->getPayload()->getString('password')),
+            new PasswordCredentials(
+                $request->getPayload()->getString('password')
+            ),
             [
-                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+                new CsrfTokenBadge(
+                    'authenticate',
+                    $request->getPayload()->getString('_csrf_token')
+                ),
                 new RememberMeBadge(),
             ]
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
-    {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+    public function onAuthenticationSuccess(
+        Request $request,
+        TokenInterface $token,
+        string $firewallName
+    ): ?Response {
+
+        // Redirect user to the page they wanted before login
+        if ($targetPath = $this->getTargetPath(
+            $request->getSession(),
+            $firewallName
+        )) {
             return new RedirectResponse($targetPath);
         }
+
+        $user = $token->getUser();
+
+        // ADMIN
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+
+            return new RedirectResponse(
+                $this->urlGenerator->generate('app_dashboard')
+            );
+        }
+
+        // USER
         return new RedirectResponse(
-            $this->urlGenerator->generate('app_home')
-        );    }
+            $this->urlGenerator->generate('app_vitrine')
+        );
+    }
 
     protected function getLoginUrl(Request $request): string
     {
