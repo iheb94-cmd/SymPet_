@@ -1,0 +1,285 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ produit.nom }} — SymPet{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* ===== BREADCRUMB ===== */
+        .sp-breadcrumb {
+            background: #fff;
+            border-bottom: 0.5px solid var(--sp-200);
+            padding: 10px 0;
+        }
+
+        .sp-breadcrumb ol {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .sp-breadcrumb li { color: var(--sp-600); }
+
+        .sp-breadcrumb li a {
+            color: var(--sp-400);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .sp-breadcrumb li a:hover { color: var(--sp-600); }
+
+        .sp-breadcrumb li.active { color: var(--sp-800); font-weight: 600; }
+
+        /* ===== DETAIL CARD ===== */
+        .detail-card {
+            background: #fff;
+            border: 0.5px solid var(--sp-200);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(31,138,84,0.09);
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .detail-img-col {
+            width: 420px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .detail-img-col { width: 100%; }
+        }
+
+        .detail-img-col img {
+            width: 100%;
+            height: 100%;
+            min-height: 320px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .detail-badge-cat {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--sp-400);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 7px;
+            padding: 4px 12px;
+            text-transform: capitalize;
+            letter-spacing: 0.04em;
+        }
+
+        .detail-info {
+            flex: 1;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .detail-info h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: var(--sp-800);
+            margin-bottom: 0.6rem;
+            line-height: 1.2;
+        }
+
+        .detail-separator {
+            width: 48px;
+            height: 3px;
+            background: var(--sp-400);
+            border-radius: 99px;
+            margin: 1rem 0;
+        }
+
+        .detail-desc {
+            color: #4a7060;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-price-block {
+            background: var(--sp-50);
+            border: 1.5px solid var(--sp-200);
+            border-radius: 12px;
+            padding: 1rem 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-price-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--sp-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .detail-price-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--sp-600);
+            line-height: 1;
+        }
+
+        .detail-price-value small {
+            font-size: 1rem;
+            color: var(--sp-400);
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 1.8rem;
+        }
+
+        .detail-meta-pill {
+            background: var(--sp-50);
+            border: 0.5px solid var(--sp-200);
+            border-radius: 99px;
+            padding: 5px 14px;
+            font-size: 0.8rem;
+            color: var(--sp-800);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .detail-meta-pill i { color: var(--sp-400); font-size: 14px; }
+
+        .detail-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== RELATED SECTION ===== */
+        .related-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--sp-100);
+        }
+
+        .related-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
+            color: var(--sp-800);
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <!-- ===== BREADCRUMB ===== -->
+    <div class="sp-breadcrumb">
+        <div class="container">
+            <ol>
+                <li>
+                    <a href="{{ path('app_produits') }}">
+                        <i class="ti ti-home" style="font-size:14px; vertical-align:-2px"></i> Accueil
+                    </a>
+                </li>
+                <li><i class="ti ti-chevron-right" style="font-size:13px"></i></li>
+                <li>
+                    <a href="{{ path('app_produits') }}">Produits</a>
+                </li>
+                <li><i class="ti ti-chevron-right" style="font-size:13px"></i></li>
+                <li class="active">{{ produit.nom }}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container py-4">
+
+        <!-- ===== CARTE DÉTAIL ===== -->
+        <div class="detail-card">
+
+            <!-- Colonne image -->
+            <div class="detail-img-col">
+                <img src="https://picsum.photos/600/500?random={{ produit.id }}"
+                     alt="{{ produit.nom }}">
+                {% if produit.categorie is defined %}
+                    <span class="detail-badge-cat">
+                        {% if produit.categorie == 'nourriture' %}🥩{% else %}🎾{% endif %}
+                        {{ produit.categorie }}
+                    </span>
+                {% endif %}
+            </div>
+
+            <!-- Colonne infos -->
+            <div class="detail-info">
+
+                <h1>{{ produit.nom }}</h1>
+                <div class="detail-separator"></div>
+
+                <!-- Meta pills -->
+                <div class="detail-meta">
+                    <div class="detail-meta-pill">
+                        <i class="ti ti-tag"></i>
+                        {% if produit.categorie is defined %}{{ produit.categorie }}{% else %}Produit{% endif %}
+                    </div>
+                    <div class="detail-meta-pill">
+                        <i class="ti ti-star"></i> Disponible
+                    </div>
+                    <div class="detail-meta-pill">
+                        <i class="ti ti-truck"></i> Livraison sous 48h
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <p class="detail-desc">
+                    {% if produit.description is defined and produit.description %}
+                        {{ produit.description }}
+                    {% else %}
+                        Un produit de haute qualité, sélectionné avec soin pour le bien-être
+                        de votre animal de compagnie. Fabriqué avec des ingrédients naturels
+                        et soigneusement contrôlés pour garantir santé et bonheur.
+                    {% endif %}
+                </p>
+
+                <!-- Prix -->
+                <div class="detail-price-block">
+                    <div>
+                        <div class="detail-price-label">Prix unitaire</div>
+                        <div class="detail-price-value">
+                            {{ produit.prix }} <small>DT</small>
+                        </div>
+                    </div>
+                    <i class="ti ti-pig-money" style="font-size:2rem; color: var(--sp-200)"></i>
+                </div>
+
+                <!-- Actions -->
+                <div class="detail-actions">
+                    <a href="{{ path('app_produits') }}" class="btn-sp-outline">
+                        <i class="ti ti-arrow-left"></i> Retour
+                    </a>
+                    <a href="{{ path('panier_add', {'id': produit.id}) }}" class="btn-sp-primary" style="flex:1; justify-content:center;">
+                        <i class="ti ti-shopping-cart"></i> Ajouter au panier
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,414 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Produits — SymPet{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* ===== HERO BAR ===== */
+        .hero-bar {
+            background: linear-gradient(135deg, var(--sp-600) 0%, var(--sp-800) 100%);
+            padding: 2.2rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .hero-bar h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 0 4px;
+        }
+
+        .hero-bar p {
+            color: var(--sp-100);
+            margin: 0;
+            font-size: 0.92rem;
+        }
+
+        .hero-tag {
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            color: var(--sp-50);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ===== SEARCH CARD ===== */
+        .search-card {
+            background: #fff;
+            border: 0.5px solid var(--sp-200);
+            border-radius: 14px;
+            padding: 1.3rem 1.5rem;
+            box-shadow: 0 2px 12px rgba(61,184,122,0.07);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            margin-bottom: 1.8rem;
+        }
+
+        .search-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .search-field label {
+            font-size: 0.73rem;
+            font-weight: 600;
+            color: var(--sp-600);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .search-field input,
+        .search-field select {
+            border: 1.5px solid var(--sp-200);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            color: var(--sp-800);
+            background: var(--sp-50);
+            outline: none;
+            font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.15s;
+        }
+
+        .search-field input:focus,
+        .search-field select:focus {
+            border-color: var(--sp-400);
+            box-shadow: 0 0 0 3px rgba(61,184,122,0.12);
+        }
+
+        .search-field input::placeholder { color: #a0c4b0; }
+
+        /* ===== SECTION HEADER ===== */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.1rem;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            color: var(--sp-800);
+            font-weight: 600;
+        }
+
+        /* ===== PRODUCT CARDS ===== */
+        .product-card {
+            background: #fff;
+            border: 0.5px solid var(--sp-200);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: transform 0.18s, box-shadow 0.18s;
+            height: 100%;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(31,138,84,0.14);
+        }
+
+        .product-card .card-img-top {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .product-badge-cat {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--sp-400);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 6px;
+            padding: 3px 9px;
+            letter-spacing: 0.03em;
+            text-transform: capitalize;
+        }
+
+        .product-card .card-body {
+            padding: 1rem 1.1rem;
+        }
+
+        .product-card .card-title {
+            font-size: 0.97rem;
+            font-weight: 600;
+            color: var(--sp-800);
+            margin-bottom: 6px;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--sp-600);
+            margin-bottom: 12px;
+        }
+
+        .product-price span {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--sp-400);
+        }
+
+        .btn-detail-sp {
+            flex: 1;
+            background: var(--sp-50);
+            border: 1.5px solid var(--sp-400);
+            border-radius: 7px;
+            color: var(--sp-600);
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 7px 0;
+            text-align: center;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: background 0.13s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-detail-sp:hover { background: var(--sp-100); color: var(--sp-800); }
+
+        .btn-cart-sp {
+            background: var(--sp-400);
+            border: none;
+            border-radius: 7px;
+            color: #fff;
+            font-size: 1rem;
+            padding: 7px 11px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.13s;
+        }
+
+        .btn-cart-sp:hover { background: var(--sp-600); color: #fff; }
+
+        /* ===== PAGINATION ===== */
+        .sympet-pagination {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2.5rem;
+        }
+
+        .page-btn-sp {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            border: 1.5px solid var(--sp-200);
+            background: #fff;
+            color: var(--sp-600);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background 0.12s, border-color 0.12s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .page-btn-sp.active,
+        .page-btn-sp:hover {
+            background: var(--sp-400);
+            border-color: var(--sp-400);
+            color: #fff;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--sp-600);
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            color: var(--sp-200);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h4 {
+            font-family: 'Fraunces', serif;
+            color: var(--sp-800);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <!-- ===== HERO ===== -->
+    <div class="hero-bar">
+        <div>
+            <h1>🐶 Nos Produits</h1>
+            <p>Tout ce dont votre animal a besoin, au meilleur prix.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <div class="hero-tag">
+                <i class="ti ti-package"></i> {{ produits|length }} produits
+            </div>
+            <div class="hero-tag">
+                <i class="ti ti-truck"></i> Livraison rapide
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4">
+
+        <!-- ===== FORMULAIRE DE RECHERCHE ===== -->
+        <form method="get" action="{{ path('app_produits') }}" class="search-card">
+
+            <div class="search-field">
+                <label><i class="ti ti-search" style="font-size:13px"></i> Nom produit</label>
+                <input type="text"
+                       name="nom"
+                       placeholder="Ex: croquettes..."
+                       value="{{ app.request.query.get('nom') }}">
+            </div>
+
+            <div class="search-field" style="max-width: 120px;">
+                <label><i class="ti ti-coin" style="font-size:13px"></i> Prix min</label>
+                <input type="number"
+                       name="prixMin"
+                       placeholder="0"
+                       value="{{ app.request.query.get('prixMin') }}">
+            </div>
+
+            <div class="search-field" style="max-width: 120px;">
+                <label>Prix max</label>
+                <input type="number"
+                       name="prixMax"
+                       placeholder="999"
+                       value="{{ app.request.query.get('prixMax') }}">
+            </div>
+
+            <div class="search-field" style="max-width: 160px;">
+                <label><i class="ti ti-category" style="font-size:13px"></i> Catégorie</label>
+                <select name="categorie">
+                    <option value="">Toutes</option>
+                    <option value="nourriture" {{ app.request.query.get('categorie') == 'nourriture' ? 'selected' }}>
+                        🥩 Nourriture
+                    </option>
+                    <option value="jouet" {{ app.request.query.get('categorie') == 'jouet' ? 'selected' }}>
+                        🎾 Jouet
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-sp-primary" style="align-self: flex-end; padding: 9px 22px;">
+                <i class="ti ti-search"></i> Rechercher
+            </button>
+
+            {% if app.request.query.get('nom') or app.request.query.get('prixMin') or app.request.query.get('prixMax') or app.request.query.get('categorie') %}
+                <a href="{{ path('app_produits') }}" class="btn-sp-outline" style="align-self: flex-end;">
+                    <i class="ti ti-x"></i> Réinitialiser
+                </a>
+            {% endif %}
+
+        </form>
+
+        <!-- ===== SECTION HEADER ===== -->
+        <div class="section-header">
+            <div class="section-title">
+                {{ produits|length }} produit{{ produits|length > 1 ? 's' : '' }} trouvé{{ produits|length > 1 ? 's' : '' }}
+            </div>
+        </div>
+
+        <!-- ===== GRILLE PRODUITS ===== -->
+        {% if produits is empty %}
+            <div class="empty-state">
+                <i class="ti ti-mood-sad"></i>
+                <h4>Aucun produit trouvé</h4>
+                <p>Essayez de modifier vos critères de recherche.</p>
+                <a href="{{ path('app_produits') }}" class="btn-sp-primary mt-3">
+                    <i class="ti ti-refresh"></i> Voir tous les produits
+                </a>
+            </div>
+        {% else %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                {% for produit in produits %}
+                    <div class="col">
+                        <div class="product-card">
+
+                            <!-- Badge catégorie -->
+                            {% if produit.categorie is defined %}
+                                <span class="product-badge-cat">{{ produit.categorie }}</span>
+                            {% endif %}
+
+                            <!-- Image -->
+                            <img src="https://picsum.photos/400/300?random={{ produit.id }}"
+                                 class="card-img-top"
+                                 alt="{{ produit.nom }}">
+
+                            <div class="card-body">
+                                <h5 class="card-title">{{ produit.nom }}</h5>
+
+                                <div class="product-price">
+                                    {{ produit.prix }} <span>DT</span>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <a href="{{ path('product_show', {'id': produit.id}) }}"
+                                       class="btn-detail-sp">
+                                        <i class="ti ti-eye" style="font-size:15px"></i> Voir détail
+                                    </a>
+                                    <a href="{{ path('panier_add', {'id': produit.id}) }}"
+                                       class="btn-cart-sp"
+                                       title="Ajouter au panier">
+                                        <i class="ti ti-shopping-cart"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- ===== PAGINATION ===== -->
+        {% if pages is defined and pages > 1 %}
+            <div class="sympet-pagination">
+                {% for i in 1..pages %}
+                    <a href="{{ path('app_produits', {
+                        page: i,
+                        nom: app.request.query.get('nom'),
+                        prixMin: app.request.query.get('prixMin'),
+                        prixMax: app.request.query.get('prixMax'),
+                        categorie: app.request.query.get('categorie')
+                    }) }}"
+                       class="page-btn-sp {{ currentPage == i ? 'active' : '' }}">
+                        {{ i }}
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+{% endblock %}

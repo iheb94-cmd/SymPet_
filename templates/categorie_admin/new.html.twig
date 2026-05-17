@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="container mt-4">
+
+        <h2>Créer catégorie</h2>
+
+        <div class="card">
+            <div class="card-body">
+
+                {{ include('categorie_admin/_form.html.twig') }}
+
+            </div>
+        </div>
+
+        <a href="{{ path('app_categorie_admin_index') }}"
+           class="btn btn-secondary mt-3">
+            Back
+        </a>
+
+    </div>
+
+{% endblock %}

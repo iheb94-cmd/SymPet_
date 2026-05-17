@@ -101,7 +101,11 @@ class UserType extends AbstractType
                         'message' => 'Le mot de passe doit contenir au moins 6 caractères et un @'
                     ])
                 ],
-            ]);
+            ])
+            // TODO: to be verified
+        ->add('roles')
+        ->add('password')
+        ->add('isVerified');
 
         if ($options['is_admin']) {
             $builder->add('roles', ChoiceType::class, [

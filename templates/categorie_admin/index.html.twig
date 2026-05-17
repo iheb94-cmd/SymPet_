@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="container mt-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Catégories</h2>
+
+            <a href="{{ path('app_categorie_admin_new') }}" class="btn btn-primary">
+                + Ajouter
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body table-responsive">
+
+                <table class="table table-hover">
+
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for categorie in categories %}
+                        <tr>
+                            <td>{{ categorie.id }}</td>
+
+                            <td>
+                                <strong>{{ categorie.nom }}</strong>
+                            </td>
+
+                            <td>{{ categorie.description }}</td>
+
+                            <td class="d-flex gap-2">
+
+                                <a href="{{ path('app_categorie_admin_show', {'id': categorie.id}) }}"
+                                   class="btn btn-success btn-sm">
+                                    Voir
+                                </a>
+
+                                <a href="{{ path('app_categorie_admin_edit', {'id': categorie.id}) }}"
+                                   class="btn btn-warning btn-sm">
+                                    Edit
+                                </a>
+
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                Aucun résultat
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

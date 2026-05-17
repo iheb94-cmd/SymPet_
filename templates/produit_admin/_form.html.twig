@@ -1,0 +1,19 @@
+<div class="container mt-4">
+
+    <div class="card shadow">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+
+            {{ form_widget(form, {'attr': {'class': 'form-control'}}) }}
+
+            <button class="btn btn-primary mt-3">
+                {{ button_label|default('Save') }}
+            </button>
+
+            {{ form_end(form) }}
+
+        </div>
+    </div>
+
+</div>
