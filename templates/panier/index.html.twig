@@ -1,0 +1,525 @@
+{#  {% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        <h2>Mon panier</h2>
+
+
+        {% for item in items %}
+            <div class="card p-3 mb-3">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-3">
+                        <img src="https://picsum.photos/200/150?random={{ item.produit.id }}"
+                             class="img-fluid rounded"
+                             alt="{{ item.produit.nom }}">
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <h5>{{ item.produit.nom }}</h5>
+
+                        <p>Prix : {{ item.produit.prix }} DT</p>
+
+                        <p>Quantité : {{ item.quantite }}</p>
+
+                        <a href="{{ path('panier_update',
+                            {'id': item.produit.id, 'qte': item.quantite + 1}) }}"
+                           class="btn btn-success btn-sm">
+                            +
+                        </a>
+
+                        <a href="{{ path('panier_update',
+                            {'id': item.produit.id, 'qte': item.quantite - 1}) }}"
+                           class="btn btn-warning btn-sm">
+                            -
+                        </a>
+
+                        <a href="{{ path('panier_remove',
+                            {'id': item.produit.id}) }}"
+                           class="btn btn-danger btn-sm">
+                            Supprimer
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+        {% else %}
+            <p>Votre panier est vide.</p>
+        {% endfor %}
+
+        <h3>Total : {{ total }} DT</h3>
+
+        <a href="{{ path('app_produits') }}"
+           class="btn btn-primary mt-3">
+            ← Retour à la vitrine
+        </a>
+
+        <a href="{{ path('panier_valider') }}"
+           class="btn btn-success mt-3">
+            Valider le panier
+        </a>
+
+    </div>
+{% endblock %}
+#}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier — SymPet{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* ===== HERO BAR ===== */
+        .hero-bar {
+            background: linear-gradient(135deg, var(--sp-600) 0%, var(--sp-800) 100%);
+            padding: 2rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .hero-bar h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 0 4px;
+        }
+
+        .hero-bar p {
+            color: var(--sp-100);
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* ===== PANIER ITEM CARD ===== */
+        .panier-card {
+            background: #fff;
+            border: 0.5px solid var(--sp-200);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            transition: box-shadow 0.15s;
+        }
+
+        .panier-card:hover {
+            box-shadow: 0 6px 20px rgba(31,138,84,0.10);
+        }
+
+        .panier-card-inner {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            flex-wrap: wrap;
+        }
+
+        .panier-img {
+            width: 140px;
+            height: 120px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border-radius: 14px 0 0 14px;
+        }
+
+        @media (max-width: 576px) {
+            .panier-img { width: 100%; height: 160px; border-radius: 14px 14px 0 0; }
+            .panier-card-inner { flex-direction: column; }
+        }
+
+        .panier-body {
+            flex: 1;
+            padding: 1rem 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .panier-nom {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--sp-800);
+            margin-bottom: 4px;
+        }
+
+        .panier-prix-unit {
+            font-size: 0.85rem;
+            color: var(--sp-600);
+            margin-bottom: 8px;
+        }
+
+        .panier-subtotal {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--sp-600);
+        }
+
+        .panier-subtotal small {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--sp-400);
+        }
+
+        /* Quantité controls */
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1.5px solid var(--sp-200);
+            background: var(--sp-50);
+            color: var(--sp-600);
+            font-size: 1rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background 0.12s, border-color 0.12s;
+            line-height: 1;
+        }
+
+        .qty-btn:hover {
+            background: var(--sp-100);
+            border-color: var(--sp-400);
+            color: var(--sp-800);
+        }
+
+        .qty-btn.minus:hover {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .qty-display {
+            width: 38px;
+            height: 32px;
+            background: var(--sp-50);
+            border: 1.5px solid var(--sp-200);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--sp-800);
+        }
+
+        .btn-remove {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1.5px solid #f5c6c6;
+            background: #fff5f5;
+            color: #c0392b;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background 0.12s;
+            margin-left: 8px;
+        }
+
+        .btn-remove:hover {
+            background: #fde8e8;
+            border-color: #e74c3c;
+            color: #a93226;
+        }
+
+        /* ===== RÉSUMÉ TOTAL ===== */
+        .total-card {
+            background: #fff;
+            border: 0.5px solid var(--sp-200);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: sticky;
+            top: 80px;
+            box-shadow: 0 4px 20px rgba(31,138,84,0.08);
+        }
+
+        .total-card-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            color: var(--sp-800);
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--sp-100);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            color: var(--sp-600);
+            margin-bottom: 8px;
+        }
+
+        .total-row.grand {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--sp-800);
+            border-top: 1.5px solid var(--sp-100);
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        .total-row.grand span:last-child { color: var(--sp-600); }
+
+        .btn-valider {
+            width: 100%;
+            background: var(--sp-400);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-top: 1.2rem;
+            transition: background 0.15s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-valider:hover { background: var(--sp-600); color: #fff; }
+
+        .btn-continuer {
+            width: 100%;
+            background: transparent;
+            color: var(--sp-600);
+            border: 1.5px solid var(--sp-200);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            margin-top: 8px;
+            transition: background 0.15s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-continuer:hover { background: var(--sp-50); color: var(--sp-800); }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-panier {
+            background: #fff;
+            border: 0.5px solid var(--sp-200);
+            border-radius: 16px;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .empty-panier i {
+            font-size: 4rem;
+            color: var(--sp-200);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .empty-panier h4 {
+            font-family: 'Fraunces', serif;
+            color: var(--sp-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-panier p { color: var(--sp-600); font-size: 0.9rem; }
+
+        /* ===== SECTION TITLE ===== */
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.05rem;
+            color: var(--sp-800);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .items-count {
+            background: var(--sp-100);
+            color: var(--sp-800);
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 9px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <!-- ===== HERO ===== -->
+    <div class="hero-bar">
+        <div>
+            <h1>🛒 Mon Panier</h1>
+            <p>Vérifiez vos articles avant de valider la commande.</p>
+        </div>
+        {% if items|length > 0 %}
+            <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 16px;font-size:0.85rem;color:var(--sp-50);">
+                <i class="ti ti-package"></i> {{ items|length }} article{{ items|length > 1 ? 's' : '' }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="container py-4">
+
+        {% if items is empty %}
+
+            <!-- ===== PANIER VIDE ===== -->
+            <div class="empty-panier">
+                <i class="ti ti-shopping-cart-off"></i>
+                <h4>Votre panier est vide</h4>
+                <p>Ajoutez des produits pour commencer vos achats.</p>
+                <a href="{{ path('app_produits') }}" class="btn-sp-primary mt-3" style="display:inline-flex;">
+                    <i class="ti ti-arrow-left"></i> Voir les produits
+                </a>
+            </div>
+
+        {% else %}
+
+            <div class="row g-4">
+
+                <!-- ===== COLONNE ARTICLES ===== -->
+                <div class="col-lg-8">
+
+                    <div class="section-title">
+                        <i class="ti ti-list" style="color:var(--sp-400)"></i>
+                        Articles
+                        <span class="items-count">{{ items|length }}</span>
+                    </div>
+
+                    {% for item in items %}
+                        <div class="panier-card">
+                            <div class="panier-card-inner">
+
+                                <!-- Image -->
+                                <img src="https://picsum.photos/200/150?random={{ item.produit.id }}"
+                                     class="panier-img"
+                                     alt="{{ item.produit.nom }}">
+
+                                <!-- Infos -->
+                                <div class="panier-body">
+
+                                    <div>
+                                        <div class="panier-nom">{{ item.produit.nom }}</div>
+                                        <div class="panier-prix-unit">
+                                            <i class="ti ti-coin" style="font-size:13px"></i>
+                                            {{ item.produit.prix }} DT / unité
+                                        </div>
+                                        <div class="panier-subtotal">
+                                            {{ (item.produit.prix * item.quantite)|number_format(2, '.', ' ') }}
+                                            <small>DT</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contrôles quantité + supprimer -->
+                                    <div class="d-flex align-items-center">
+                                        <div class="qty-controls">
+                                            <a href="{{ path('panier_update', {'id': item.produit.id, 'qte': item.quantite - 1}) }}"
+                                               class="qty-btn minus"
+                                               title="Diminuer">
+                                                <i class="ti ti-minus" style="font-size:13px"></i>
+                                            </a>
+                                            <div class="qty-display">{{ item.quantite }}</div>
+                                            <a href="{{ path('panier_update', {'id': item.produit.id, 'qte': item.quantite + 1}) }}"
+                                               class="qty-btn"
+                                               title="Augmenter">
+                                                <i class="ti ti-plus" style="font-size:13px"></i>
+                                            </a>
+                                        </div>
+                                        <a href="{{ path('panier_remove', {'id': item.produit.id}) }}"
+                                           class="btn-remove"
+                                           title="Supprimer">
+                                            <i class="ti ti-trash" style="font-size:14px"></i>
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Bouton retour -->
+                    <a href="{{ path('app_produits') }}" class="btn-sp-outline mt-2">
+                        <i class="ti ti-arrow-left"></i> Continuer mes achats
+                    </a>
+
+                </div>
+
+                <!-- ===== COLONNE RÉSUMÉ ===== -->
+                <div class="col-lg-4">
+                    <div class="total-card">
+
+                        <div class="total-card-title">
+                            <i class="ti ti-receipt" style="color:var(--sp-400)"></i>
+                            Résumé de commande
+                        </div>
+
+                        {% for item in items %}
+                            <div class="total-row">
+                                <span>{{ item.produit.nom }} × {{ item.quantite }}</span>
+                                <span>{{ (item.produit.prix * item.quantite)|number_format(2, '.', ' ') }} DT</span>
+                            </div>
+                        {% endfor %}
+
+                        <div class="total-row">
+                            <span><i class="ti ti-truck" style="font-size:13px"></i> Livraison</span>
+                            <span style="color:var(--sp-400); font-weight:600;">Gratuite</span>
+                        </div>
+
+                        <div class="total-row grand">
+                            <span>Total</span>
+                            <span>{{ total|number_format(2, '.', ' ') }} DT</span>
+                        </div>
+
+                        <a href="{{ path('panier_valider') }}" class="btn-valider">
+                            <i class="ti ti-check"></i> Valider la commande
+                        </a>
+
+                        <a href="{{ path('app_produits') }}" class="btn-continuer">
+                            <i class="ti ti-arrow-left"></i> Retour à la boutique
+                        </a>
+
+                        <!-- Badges confiance -->
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--sp-100);">
+                            <div style="font-size:0.75rem; color:var(--sp-600); display:flex; align-items:center; gap:4px;">
+                                <i class="ti ti-lock" style="color:var(--sp-400); font-size:14px"></i> Paiement sécurisé
+                            </div>
+                            <div style="font-size:0.75rem; color:var(--sp-600); display:flex; align-items:center; gap:4px;">
+                                <i class="ti ti-refresh" style="color:var(--sp-400); font-size:14px"></i> Retour facile
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+{% endblock %}
