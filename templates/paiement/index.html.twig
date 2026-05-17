@@ -1,0 +1,29 @@
+<form id="payment-form">
+    <div id="card-element"></div>
+    <button id="submit">Payer {{ commande.total }}€</button>
+    <div id="payment-message"></div>
+</form>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const stripe = Stripe('{{ stripe_public_key }}');
+    const elements = stripe.elements();
+    const card = elements.create('card');
+    card.mount('#card-element');
+
+    fetch('{{ path("app_create_payment_intent", {id: commande.id}) }}', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('payment-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const { error } = await stripe.confirmCardPayment(data.clientSecret, {
+                    payment_method: { card: card }
+                });
+                if (error) {
+                    document.getElementById('payment-message').textContent = error.message;
+                } else {
+                    window.location.href = '{{ path("app_paiement_success", {id: commande.id}) }}';
+                }
+            });
+        });
+</script>

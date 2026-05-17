@@ -24,6 +24,15 @@ class Commande
     #[ORM\ManyToOne(inversedBy: 'commandes')]
     private ?User $user = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $modePaiement = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripePaymentIntentId = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $total = null;
+
     /**
      * @var Collection<int, LigneCommande>
      */
@@ -80,6 +89,47 @@ private Collection $ligneCommandes;
 
         return $this;
     }
+    public function getModePaiement(): ?string
+    {
+        return $this->modePaiement;
+    }
+
+    public function setModePaiement(?string $modePaiement): static
+    {
+        $this->modePaiement = $modePaiement;
+        return $this;
+    }
+
+    public function getStripePaymentIntentId(): ?string
+    {
+        return $this->stripePaymentIntentId;
+    }
+
+    public function setStripePaymentIntentId(?string $stripePaymentIntentId): static
+    {
+        $this->stripePaymentIntentId = $stripePaymentIntentId;
+        return $this;
+    }
+
+    public function getTotal(): ?float
+    {
+        return $this->total;
+    }
+
+    public function setTotal(?float $total): static
+    {
+        $this->total = $total;
+        return $this;
+    }
+    public function calculerTotal(): float
+    {
+        $total = 0;
+        foreach ($this->ligneCommandes as $ligne) {
+            $total += $ligne->getQuantite() * $ligne->getPrixUnitaire();
+        }
+        return $total;
+    }
+
 
     /**
      * @return Collection<int, LigneCommande>

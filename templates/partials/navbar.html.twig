@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container-fluid">
 
-        <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">
+        <a class="navbar-brand fw-bold">
             🐾 SymPet
         </a>
 
@@ -12,10 +12,6 @@
         <div class="collapse navbar-collapse" id="navbarNav">
 
             <ul class="navbar-nav me-auto">
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_home') }}">Home</a>
-                </li>
 
                 {% if is_granted('ROLE_ADMIN') %}
 
@@ -28,6 +24,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('admin_commandes') }}">
                             Commandes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_categorie_admin_index') }}">
+                            Categorie
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_produit_admin_index') }}">
+                            Produits
                         </a>
                     </li>
                      <li class="nav-item">

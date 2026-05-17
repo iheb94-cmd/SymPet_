@@ -66,7 +66,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         string $firewallName
     ): ?RedirectResponse {
         return new RedirectResponse(
-            $this->urlGenerator->generate('app_home')
+            $this->urlGenerator->generate('app_produits')
         );
     }
 
